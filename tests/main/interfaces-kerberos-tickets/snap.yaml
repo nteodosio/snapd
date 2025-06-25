@@ -1,0 +1,9 @@
+name: kerberos-tickets-consumer
+version: 1
+summary: S
+description: D
+
+apps:
+  kerberos-ticekts-consumer:
+    command: consumer
+    plugs: [kerberos-tickets]
