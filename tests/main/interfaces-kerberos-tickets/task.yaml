@@ -13,6 +13,7 @@ environment:
     KRB5CCNAME: FILE:$TICKET
     # Snap_run will overwrite the original KRB5CCNAME
     EXPECTED_KRB5CCNAME: FILE:/var/lib/snapd/hostfs/tmp/krb5cc_test
+    SSSD_KRB_DIR: /var/lib/sss/pubconf/krb5.include.d
 
 prepare: |
     echo "Given a snap declaring a plug on the kerberos-tickets interface is installed"
@@ -24,6 +25,7 @@ prepare: |
 execute: |
     echo "KRB5CCNAME was correctly overwritten in the snap's environment."
     kerberos-tickets-consumer | tr -s / | MATCH "KRB5CCNAME:$EXPECTED_KRB5CCNAME"
+    kerberos-tickets-consumer | MATCH "cannot cd into $SSSD_KRB_DIR"
 
     echo "The interface is disconnected by default"
     snap interfaces -i kerberos-tickets | MATCH -- '^- +kerberos-tickets-consumer:kerberos-tickets'
@@ -35,6 +37,7 @@ execute: |
         echo "Then the snap command can rean read/write the Kerberos ticket"
         kerberos-tickets-consumer | MATCH "$TICKET_CONTENTS"
         kerberos-tickets-consumer | MATCH "appended contents"
+        kerberos-tickets-consumer | NOMATCH "cannot cd into $SSSD_KRB_DIR"
 
         echo "When the plug is disconnected"
         snap disconnect kerberos-tickets-consumer:kerberos-tickets

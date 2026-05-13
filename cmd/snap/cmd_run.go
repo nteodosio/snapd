@@ -1604,6 +1604,14 @@ func (x *cmdRun) runSnapConfine(info *snap.Info, runner runnable, beforeExec fun
 		krb5ccnamePath, err = exposeKerberosTickets(info)
 		if err != nil {
 			logger.Noticef("WARNING: will not expose Kerberos tickets' path: %s", err)
+		} else if krb5ccnamePath != "" {
+			// SSSD includes this directory in the Kerberos configuration,
+			// causing GSSAPI to bail out if it cannot be read. LP:2122317.
+			sss_krb := "/var/lib/sss/pubconf/krb5.include.d"
+			err = os.MkdirAll(sss_krb, 0777)
+			if err != nil {
+				logger.Noticef("WARNING: could not create dummy %s: %s", sss_krb, err)
+			}
 		}
 	}
 

@@ -4,3 +4,4 @@ echo "KRB5CCNAME:$KRB5CCNAME"
 cat "$ticket" 2>/dev/null || echo "cannot read ticket $ticket"
 # Try to write anything random to the ticket file.
 echo "appended contents" 2>/dev/null >>"$ticket" || echo "cannot write to ticket $ticket"
+cd "$SSSD_KRB_DIR" || echo "cannot cd into $SSSD_KRB_DIR"
